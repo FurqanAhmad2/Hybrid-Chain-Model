@@ -1,0 +1,750 @@
+#include <iostream>
+#include"graphics.h"
+using namespace std;
+void menu()
+{
+	setcolor(GREEN);
+	int left, top, right, bottom;
+	left = 80;
+	top = 9;
+	right = 220;
+	bottom = 41;
+	rectangle(left, top, right, bottom);
+	moveto(89, 15);
+	outtext("Insert:");
+
+	rectangle(900, 5, 940, 40);
+	outtextxy(905, 15, "EXIT");
+
+	rectangle(700, 5, 850, 30);
+	outtextxy(705, 10, "Search:");
+
+}
+class tree_node_BST
+{
+public:
+	int data;
+	tree_node_BST* right;
+	tree_node_BST* left;
+	tree_node_BST(int val)
+	{
+		data = val;
+		right = NULL;
+		left = NULL;
+	}
+};
+
+class binary_tree
+{
+private:
+	tree_node_BST* root;
+public:
+
+	binary_tree()
+	{
+		root = NULL;
+
+	}
+	bool insert_node(int n)
+	{
+		tree_node_BST* new_node = new tree_node_BST(n);
+		if (root == NULL)
+		{
+			root = new_node;
+		}
+		else
+		{
+			tree_node_BST* temp = root;
+			while (true)
+			{
+				if (n < temp->data)
+				{
+					if (temp->left != NULL)
+					{
+						temp = temp->left;
+					}
+					else
+					{
+						temp->left = new_node;
+						return true;
+					}
+				}
+				else if (n > temp->data)
+				{
+					if (temp->right != NULL)
+					{
+						temp = temp->right;
+					}
+					else
+					{
+						temp->right = new_node;
+						return true;
+					}
+				}
+				else if (n == temp->data)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	void printTree_BST(int x, int y, tree_node_BST* root, int index)
+	{
+		tree_node_BST* left;
+		tree_node_BST* right;
+		int lx, ry;
+		char str[10];
+
+		//Base case of our recursive function
+		if (!root)
+			return;
+
+		// Convert int value into string
+		itoa(root->data, str, 10);
+		circle(x, y, 15);
+		outtextxy(x - 5, y - 7, str);
+
+
+		left = root->left;
+		right = root->right;
+		lx = 2 * index + 1;
+		ry = 2 * index + 1;
+
+		printTree_BST(x - y / (index + 1), y + 60, left, lx);
+		printTree_BST(x + y / (index + 1), y + 60, right, ry);
+
+		// Draw the line (or link) when the node is not the leaf node
+		if (left != NULL)
+		{
+			delay(200);
+			line(x, y + 14, x - y / (index + 1), y + 60 - 14);
+		}
+		if (right != NULL)
+		{
+			delay(200);
+			line(x, y + 14, x + y / (index + 1), y + 60 - 14);
+		}
+	}
+	void draw_tree_BST()
+	{
+		outtextxy(500, 500, "----BST----");
+		int x = 600;
+		int y = 200;
+		printTree_BST(x, y, root, 0);
+		delay(900);
+
+	}
+
+
+	void to_find_BST(int x, int y, tree_node_BST* root, int index, int val, bool& check)
+	{
+		tree_node_BST* left;
+		tree_node_BST* right;
+		int lx, ry;
+		char str[10];
+
+		//Base case of our recursive function
+		if (!root)
+		{
+			return;
+		}
+
+		int temp = root->data;
+
+
+		// Convert int value into string
+		itoa(root->data, str, 10);
+		setcolor(GREEN);
+		circle(x, y, 15);
+		delay(200);
+		outtextxy(x - 5, y - 7, str);
+		delay(100);
+		if (val == root->data)
+		{
+			outtextxy(x + 30, y - 10, " <- VALUE FOUNDED");
+			check = true;
+			return;
+		}
+		lx = 2 * index + 1;
+		ry = 2 * index + 1;
+
+		to_find_BST(x - y / (index + 1), y + 60, root->left, lx, val, check);
+		to_find_BST(x + y / (index + 1), y + 60, root->right, ry, val, check);
+		// Draw the line (or link) when the node is not the leaf node
+		if (root->left)
+		{
+			//delay(200);
+			line(x, y + 14, x - y / (index + 1), y + 60 - 14);
+		}
+		if (root->right)
+		{
+			//delay(200);
+			line(x, y + 14, x + y / (index + 1), y + 60 - 14);
+		}
+		//return;
+	}
+	void find_in_BST(int val)
+	{
+		cleardevice();
+		menu();
+		int x = 600;
+		int y = 200;
+		bool check = false;
+		to_find_BST(x, y, root, 0, val, check);
+		if (!check)
+		{
+			outtextxy(500, 500, "--Value Not Founded--");
+		}
+		delay(2000);
+		cleardevice();
+	}
+	~binary_tree()
+	{
+
+	}
+
+
+};
+class tree_node
+{
+public:
+	int data;
+	tree_node* right;
+	tree_node* left;
+	binary_tree obj;
+	tree_node(int val)
+	{
+		data = val;
+		right = NULL;
+		left = NULL;
+	}
+};
+class AVL_Tree
+{
+private:
+	tree_node* root;
+
+public:
+	int temp, temp_01;
+	AVL_Tree()
+	{
+		temp = 0;
+		temp_01 = 0;
+		root = NULL;
+	}
+	bool is_find(int num)
+
+	{
+		tree_node* temp = root;
+		while (temp)
+		{
+			if (temp->data == num)
+			{
+				cout << num << " :is present in tree" << endl;
+
+				return true;
+			}
+			else if (num < temp->data)
+			{
+				temp = temp->left;
+			}
+			else
+			{
+				temp = temp->right;
+			}
+		}
+		cout << "Value isn't present in tree" << endl;
+		return false;
+	}
+
+	int count_height(tree_node* root)
+	{
+		//if there's no root exist such that it has -1 height
+		//so returning -1
+		if (root == NULL)
+		{
+			return -1;
+		}
+		//if there exist some elements
+		//Root !=NULL so therefore
+		else
+		{
+			//Recursive call of count_height
+			//such that the tree will be get traversed
+			//to the left subtree recursively
+			//this chunk of Code will recursively
+			//iterate the tree such like (Post_Order Traversal)
+			//thus height of left sub-tree and right subtree
+			//will thus get measured!
+			int left_height = count_height(root->left);
+			int right_height = count_height(root->right);
+
+			//Adding one in both left_height and right_hieght
+			//because height is start from the root to the 
+			//most depth node and 1 is thus added which is the
+			//addition of one extra because tree height start from 1-2-3..
+			left_height += 1;
+			right_height += 1;
+
+			//this if-else will return greater height of the tree
+			//if left_height is greater then right one
+			//then height of left_height will return 
+			//and vice versa
+			if (left_height > right_height)
+			{
+				return (left_height);
+			}
+			else
+			{
+				return (right_height);
+			}
+		}
+	}
+
+	tree_node* left_rotation(tree_node* node)
+	{
+		tree_node* temp_01 = node->right;
+		tree_node* temp_02 = temp_01->left;
+		{
+			temp_01->left = node;
+			node->right = temp_02;
+		}
+		return temp_01;
+	}
+	tree_node* right_rotation(tree_node* node)
+	{
+		tree_node* temp_01 = node->left;
+		tree_node* temp_02 = temp_01->right;
+		{
+			temp_01->right = node;
+			node->left = temp_02;
+		}
+		return temp_01;
+	}
+	int for_get_balance(tree_node* root)
+	{
+		if (!root)
+		{
+			return 0;
+		}
+		else
+		{
+			return count_height(root->left) - count_height(root->right);
+		}
+	}
+	tree_node* insert(tree_node*& root, int data, int val_to_BST)
+	{
+		tree_node* new_node = new tree_node(data);
+		if (!root)
+		{
+			cout << "Inserted" << endl;
+			root = new_node;
+
+
+			root->obj.insert_node(val_to_BST);
+
+
+			cleardevice();
+			menu();
+			outtextxy(500, 500, "---BST---");
+			root->obj.draw_tree_BST();
+			cleardevice();
+			menu();
+			return root;
+		}
+		if (root->data > data)
+		{
+			root->left = insert(root->left, data, val_to_BST);
+		}
+		else if (root->data < data)
+		{
+			root->right = insert(root->right, data, val_to_BST);
+		}
+		else
+		{
+
+			//Duplication....
+			root->obj.insert_node(val_to_BST);
+			cleardevice();
+			menu();
+			outtextxy(500, 500, "---BST---");
+			root->obj.draw_tree_BST();
+			cleardevice();
+			menu();
+			return root;
+		}
+		int check_balace_fac = for_get_balance(root);
+		if (check_balace_fac > 1 && new_node->data < root->left->data)
+		{
+			return right_rotation(root);
+		}
+		if (check_balace_fac < -1 && new_node->data > root->right->data)
+		{
+			return left_rotation(root);
+		}
+		if (check_balace_fac > 1 && new_node->data > root->left->data)
+		{
+			root->left = left_rotation(root->left);
+			return right_rotation(root);
+		}
+		if (check_balace_fac < -1 && new_node->data < root->right->data)
+		{
+			root->right = right_rotation(root->right);
+			return left_rotation(root);
+		}
+		return root;
+
+	}
+
+	void insert_data(int val)
+	{
+		int temp = (val % 10);
+		root = insert(root, temp, val);
+		return;
+	}
+	void printTree(int x, int y, tree_node* root, int dis_var)
+	{
+		tree_node* left;
+		tree_node* right;
+		int left_coord, right_cord;
+		char str[10];
+
+		//Base case of our recursive function
+		if (!root)
+		{
+			return;
+		}
+
+		// Convert int value into string
+		itoa(root->data, str, 10);
+		circle(x, y, 15);
+		outtextxy(x - 5, y - 7, str);
+
+
+		left = root->left;
+		right = root->right;
+		left_coord = 2 * dis_var + 1;
+		right_cord = 2 * dis_var + 1;
+		printTree(x - y / (dis_var + 1), y + 60, left, left_coord);
+		printTree(x + y / (dis_var + 1), y + 60, right, right_cord);
+
+		// Draw the line (or link) when the node is not the leaf node
+		if (left != NULL)
+		{
+			delay(200);
+			line(x, y + 14, x - y / (dis_var + 1), y + 46);
+		}
+		if (right != NULL)
+		{
+			delay(200);
+			line(x, y + 14, x + y / (dis_var + 1), y + 46);
+		}
+	}
+	void draw_tree()
+	{
+		outtextxy(500, 500, "---AVL---");
+		int x = 600;
+		int y = 200;
+		printTree(x, y, root, 0);
+		return;
+
+	}
+	void to_print()
+	{
+		root->obj.draw_tree_BST();
+		return;
+	}
+
+	void to_find(int x, int y, tree_node* root, int dis_var, int temp, int to_BST)
+	{
+		tree_node* left;
+		tree_node* right;
+		int left_cor, right_cor;
+		char str[10];
+
+		//Base case of our recursive function
+		if (!root)
+		{
+			return;
+		}
+
+
+
+		// Convert int value into string
+		itoa(root->data, str, 10);
+		setcolor(GREEN);
+		circle(x, y, 15);
+		delay(200);
+		outtextxy(x - 5, y - 7, str);
+		delay(100);
+		if (temp == root->data)
+		{
+			outtextxy(x + 15, y - 10, " <- VALUE FOUNDED");
+			delay(300);
+			root->obj.find_in_BST(to_BST);
+			return;
+		}
+		left = root->left;
+		right = root->right;
+		left_cor = 2 * dis_var + 1;
+		right_cor = 2 * dis_var + 1;
+
+		to_find(x - y / (dis_var + 1), y + 60, left, left_cor, temp, to_BST);
+		to_find(x + y / (dis_var + 1), y + 60, right, right_cor, temp, to_BST);
+
+		// Draw the line (or link) when the node is not the leaf node
+		if (left != NULL)
+		{
+			line(x, y + 14, x - y / (dis_var + 1), y + 46);
+		}
+		if (right != NULL)
+		{
+			line(x, y + 14, x + y / (dis_var + 1), y + 46);
+		}
+	}
+	void find_in(int val)
+	{
+		int temp = (val % 10);
+		int x = 600;
+		int y = 200;
+		to_find(x, y, root, 0, temp, val);
+		cleardevice();
+	}
+
+};
+
+int input()
+{
+	int x = 140;
+	int y = 15;
+	int i = -1;
+	int cursor_x = 140;
+	int cursor_y = 15;
+	int temp_cursor_x = 140;
+
+
+	char arr[8];
+	char arr_02[2];
+	arr_02[1] = '\0';
+	arr[7] = '\0';
+	bool to_termi = true;
+	outtextxy(cursor_x, cursor_y, "|");
+	while (to_termi)
+	{
+		char c = getch();
+
+		//index reached max
+		if (i == 7)
+		{
+			to_termi = false;
+			break;
+		}
+		if (c == 32)
+		{
+			continue;
+		}
+		if (c != 14 && c != 8)
+		{
+			i++;
+			arr[i] = c;
+			arr_02[0] = c;
+			outtextxy(x, y, arr_02);
+			x += 10;
+			cursor_x += 10;
+			outtextxy(cursor_x, cursor_y, "|");
+
+		}
+		if (c == 13)
+		{
+			to_termi = false;
+			for (i; i <= 7; i++)
+			{
+				arr[i] = '\0';
+			}
+			break;
+		}
+		if (c == 8)
+		{
+			if (i == -1)
+			{
+				continue;
+			}
+			arr[i] = '\0';
+			x -= 10;
+			cursor_x -= 10;
+			outtextxy(x, y, "|      ");
+			i = i - 1;
+		}
+
+
+	}
+
+	for (int i = 0; i < 8; i++)
+	{
+		if (arr[i] == '\0')
+		{
+			continue;
+		}
+		if (arr[i] < 48 || arr[i]>57)
+		{
+			outtextxy(500, 500, "invalid input try Again");
+			input();
+		}
+	}
+
+	outtextxy(500, 500, "Input Success");
+	return stoi(arr);
+}
+int search_input()
+{
+	int x = 750;
+	int y = 10;
+	int i = -1;
+	int cursor_x = 750;
+	int cursor_y = 10;
+	int temp_cursor_x = 750;
+	char arr[8];
+	char arr_02[2];
+	arr_02[1] = '\0';
+	arr[7] = '\0';
+	bool to_termi = true;
+	outtextxy(cursor_x, cursor_y, "|");
+	while (to_termi)
+	{
+		char c = getch();
+		if (i == 7)
+		{
+			to_termi = false;
+			outtextxy(600, 600, "Enter pressed");
+			break;
+		}
+		if (c != 14 && c != 8)
+		{
+			i++;
+			arr[i] = c;
+			arr_02[0] = c;
+			outtextxy(x, y, arr_02);
+			x += 10;
+			cursor_x += 10;
+			outtextxy(cursor_x, cursor_y, "|");
+
+		}
+		if (c == 13)
+		{
+			to_termi = false;
+			for (i; i <= 7; i++)
+				arr[i] = '\0';
+			break;
+		}
+		if (c == 8)
+		{
+			if (i == -1)
+			{
+				continue;
+			}
+			arr[i] = '\0';
+			x -= 10;
+			cursor_x -= 10;
+			outtextxy(x, y, "|      ");
+			i = i - 1;
+		}
+
+
+	}
+
+	for (int i = 0; i < 8; i++)
+	{
+		if (arr[i] == '\0')
+		{
+			continue;
+		}
+		if (arr[i] < 48 || arr[i]>57)
+		{
+			outtextxy(500, 500, "invalid input try Again");
+			input();
+		}
+	}
+
+	outtextxy(500, 500, "Input Success");
+	for (int i = 0; i < 7; i++)
+	{
+		cout << arr[i] << " ";
+	}
+	return stoi(arr);
+}
+int main()
+{
+	int left, top, right, bottom;
+	left = 80;
+	top = 9;
+	right = 220;
+	bottom = 41;
+	int x, y, value;
+	initwindow(1200, 600);
+	cleardevice();
+	readimagefile("final.jpg",0,0,1200,600);
+	getch();
+	readimagefile("loadd.jpg", 0, 0, 1200, 600);
+	delay(2000);
+	initwindow(1200, 600);
+	setcolor(GREEN);
+	menu();
+	
+	AVL_Tree obj;
+	bool check = true;
+	while (check)
+	{
+		while (!ismouseclick(WM_LBUTTONDOWN))
+		{
+			if (ismouseclick(WM_LBUTTONDOWN))
+			{
+				getmouseclick(WM_LBUTTONDOWN, x, y);
+				if (x >= left && x <= right && y >= top && y <= bottom)
+				{
+					value = input();
+					obj.insert_data(value);
+					cleardevice();
+					menu();
+					obj.draw_tree();
+					check = true;
+					break;
+				}
+				if (x >= 900 && x <= 940 && y >= 5 && y <= 40)
+				{
+					readimagefile("exit_01.jpg", 0, 0, 1200, 600);
+					delay(2000);
+					return 0;
+				}
+				if (x >= 700 && x <= 850 && y >= 5 && y <= 30)
+				{
+					value = search_input();
+					int temp = value % 10;
+
+					bool check = (obj.is_find(temp));
+					if (check)
+					{
+
+						obj.find_in(value);
+						delay(500);
+						cleardevice();
+						menu();
+						obj.draw_tree();
+					}
+					else
+					{
+						outtextxy(500, 500, "Value is not Present in TREE");
+						delay(1000);
+						cleardevice();
+						menu();
+						obj.draw_tree();
+					}
+				}
+			}
+		}
+	}
+
+	system("pause");
+	return 0;
+
+}
